@@ -1,12 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {SafeAreaView, StyleSheet, ScrollView, View, Text} from 'react-native';
 
 import {Card} from './components/Card';
+import {Switch} from './components/Switch';
+import { connect } from './data';
 
 const App = () => {
+  const [state, setState] = useState([]);
+  useEffect(() => {
+    connect(setState);
+  }, []);
   const onPress = () => {
     console.log('Test');
   };
+  const content = (item) => {
+    if (item['class'] === 'switch') {
+      return (
+        <Switch data={item} />
+      );
+    }
+    return (
+      <Text>{item.attributes.friendly_name} - {item.state}</Text>
+    );
+  }
+  console.log(state);
+  const items = state.map((item) => {
+    const itemName = Object.keys(item)[0];
+    return (
+      <Card onPress={onPress} key={itemName}>
+        {content(item[itemName])}
+      </Card>
+    );
+  });
   return (
     <SafeAreaView>
       <ScrollView
@@ -14,15 +39,7 @@ const App = () => {
         contentContainerStyle={styles.scrollView}>
           <View style={styles.body}>
             <View style={styles.container}>
-              <Card onPress={onPress}>
-                <Text>Hello</Text>
-              </Card>
-              <Card onPress={onPress}>
-                <Text>Second Hello</Text>
-              </Card>
-              <Card onPress={onPress}>
-                <Text>Third Hello</Text>
-              </Card>
+              {items}
             </View>
           </View>
       </ScrollView>
