@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Card} from './Card';
+import {Overlay} from './Overlay';
 
 export const Climate = ({data, mqttClient, deviceName}) => {
   const iconStyle = [styles.icon];
+  const [modalVisible, setModalVisible] = useState(false);
 
   let icon = data.attributes.icon || 'fan';
   switch (data.state) {
@@ -45,12 +47,13 @@ export const Climate = ({data, mqttClient, deviceName}) => {
   };
 
   const config = () => {
-    console.log('Config');
+    setModalVisible(true);
   };
 
   const turnOff = () => {
+    console.log('Off');
     if (data.state === 'off') {
-      console.log('Config');
+      config();
     } else {
       console.log('Off');
     }
@@ -59,7 +62,7 @@ export const Climate = ({data, mqttClient, deviceName}) => {
   return (
     <Card slots={2}>
       <View style={styles.topRow}>
-        <TouchableHighlight style={styles.clickArea} onTouch={turnOff}>
+        <TouchableHighlight style={styles.clickArea} onPress={turnOff}>
           <View style={styles.wrapper}>
             <Icon name={icon} style={iconStyle} />
             <View>
@@ -77,7 +80,8 @@ export const Climate = ({data, mqttClient, deviceName}) => {
               }
             />
           </TouchableHighlight>
-          <Text style={data.state !== 'off' ? styles.temp : styles.disabledTemp}>
+          <Text
+            style={data.state !== 'off' ? styles.temp : styles.disabledTemp}>
             {data.attributes.temperature}°
           </Text>
           <TouchableHighlight onPress={tempUp}>
@@ -103,6 +107,59 @@ export const Climate = ({data, mqttClient, deviceName}) => {
           </TouchableHighlight>
         </View>
       </View>
+      <Overlay visible={modalVisible} changeVisibility={setModalVisible}>
+        <View style={styles.dialog}>
+          <View style={styles.topRow}>
+            <TouchableHighlight style={styles.clickArea} onPress={turnOff}>
+              <View style={styles.wrapper}>
+                <Icon name={icon} style={iconStyle} />
+                <View>
+                  <Text style={styles.title}>
+                    {data.attributes.friendly_name}
+                  </Text>
+                  <Text>Currently {data.state}</Text>
+                </View>
+              </View>
+            </TouchableHighlight>
+            <View>
+              <View style={styles.modelTempsWrapper}>
+                <Text style={styles.modelTemps}>
+                  Target: {data.attributes.temperature}°
+                </Text>
+                <Text style={styles.modelTemps}>
+                  Currently: {data.attributes.current_temperature}°
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View style={[styles.targetTemp, styles.modelTargetTemp]}>
+            <TouchableHighlight onPress={tempDown}>
+              <Icon
+                name="minus"
+                style={
+                  data.state !== 'off'
+                    ? styles.controls
+                    : styles.disabledControls
+                }
+              />
+            </TouchableHighlight>
+            <Text
+              style={data.state !== 'off' ? styles.temp : styles.disabledTemp}>
+              {data.attributes.temperature}°
+            </Text>
+            <TouchableHighlight onPress={tempUp}>
+              <Icon
+                name="plus"
+                style={
+                  data.state !== 'off'
+                    ? styles.controls
+                    : styles.disabledControls
+                }
+              />
+            </TouchableHighlight>
+          </View>
+        </View>
+      </Overlay>
     </Card>
   );
 };
@@ -201,5 +258,17 @@ const styles = StyleSheet.create({
   },
   currentTempText: {
     fontSize: 35,
+  },
+  dialog: {
+    alignItems: 'center',
+  },
+  modelTempsWrapper: {
+    marginTop: 20,
+  },
+  modelTemps: {
+    fontSize: 16,
+  },
+  modelTargetTemp: {
+    marginTop: 30,
   },
 });
