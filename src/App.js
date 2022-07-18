@@ -1,47 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {SafeAreaView, StyleSheet, ScrollView, View, Text} from 'react-native';
 
-import {Card} from './components/Card';
 import {Switch} from './components/Switch';
-import { connect } from './data';
+import {Climate} from './components/Climate';
+import {connect} from './data';
 
 const App = () => {
   const [state, setState] = useState([]);
+  let mqttClient = useRef(null);
   useEffect(() => {
-    connect(setState);
+    const mqttConnect = async () => {
+      mqttClient.current = await connect(setState);
+    };
+    mqttConnect();
   }, []);
-  const onPress = () => {
-    console.log('Test');
-  };
   const content = (item) => {
-    if (item['class'] === 'switch') {
+    const itemName = Object.keys(item)[0];
+    const entity = item[itemName];
+    if (entity.class === 'switch') {
       return (
-        <Switch data={item} />
+        <Switch
+          data={entity}
+          mqttClient={mqttClient.current}
+          key={itemName}
+          deviceName={itemName}
+        />
+      );
+    }
+    if (entity.class === 'climate') {
+      return (
+        <Climate
+          data={entity}
+          mqttClient={mqttClient.current}
+          key={itemName}
+          deviceName={itemName}
+        />
       );
     }
     return (
-      <Text>{item.attributes.friendly_name} - {item.state}</Text>
+      <Text>
+        {entity.attributes.friendly_name} - {entity.state}
+      </Text>
     );
-  }
-  console.log(state);
-  const items = state.map((item) => {
-    const itemName = Object.keys(item)[0];
-    return (
-      <Card onPress={onPress} key={itemName}>
-        {content(item[itemName])}
-      </Card>
-    );
-  });
+  };
+  // console.log(state);
+  const items = state.map((item) => content(item));
   return (
     <SafeAreaView>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.scrollView}>
-          <View style={styles.body}>
-            <View style={styles.container}>
-              {items}
-            </View>
-          </View>
+        <View style={styles.body}>
+          <View style={styles.container}>{items}</View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

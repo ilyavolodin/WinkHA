@@ -1,21 +1,20 @@
 import React from 'react';
-import {View, TouchableHighlight, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 
-export const Card = ({children, onPress}) => {
-  return (
-    <TouchableHighlight onPress={onPress} style={styles.card}>
-      <View>{children}</View>
-    </TouchableHighlight>
-  );
+export const Card = ({children, slots = 1, style}) => {
+  const viewStyle = [styles.card, style];
+  if (slots === 1) {
+    viewStyle.push(styles.oneCell);
+  } else {
+    viewStyle.push(styles.twoCell);
+  }
+  return <View style={viewStyle}>{children}</View>;
 };
 
 const styles = StyleSheet.create({
   card: {
-    width: '50%',
-    minWidth: '45%',
-    height: '33%',
+    height: '25%',
     display: 'flex',
-    flex: 1,
     color: '#333',
     fontFamily: 'Roboto',
     fontSize: 14,
@@ -23,12 +22,20 @@ const styles = StyleSheet.create({
     margin: 4,
     backgroundColor: 'white',
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
     lineHeight: 20,
-    padding: 12,
     borderColor: '#CCC',
     borderWidth: 2,
+  },
+  oneCell: {
+    minWidth: '45%',
+    flexGrow: 1,
+    flexShrink: 0,
+    flexBasis: 0,
+  },
+  twoCell: {
+    minWidth: '95%',
+    flexGrow: 2,
+    flexShrink: 0,
+    flexBasis: 0,
   },
 });
