@@ -38,6 +38,72 @@ export const Climate = ({data, mqttClient, deviceName}) => {
       break;
   }
 
+  const climateModes = () => {
+    const modeButtons = [];
+    data.attributes.hvac_modes.forEach((item) => {
+      switch (item) {
+        case 'heat_cool':
+        case 'auto':
+          modeButtons.push(
+            <TouchableHighlight
+              onTouch={() => changeMode('heat_cool')}
+              key="heat_cool">
+              <Icon
+                name="autorenew"
+                style={[styles.heat_cool, styles.modeIcon]}
+              />
+            </TouchableHighlight>,
+          );
+          break;
+        case 'cool':
+          modeButtons.push(
+            <TouchableHighlight onTouch={() => changeMode('cool')} key="cool">
+              <Icon name="snowflake" style={[styles.cool, styles.modeIcon]} />
+            </TouchableHighlight>,
+          );
+          break;
+        case 'dry':
+          modeButtons.push(
+            <TouchableHighlight onTouch={() => changeMode('dry')} key="dry">
+              <Icon
+                name="water-percent"
+                style={[styles.dry, styles.modeIcon]}
+              />
+            </TouchableHighlight>,
+          );
+          break;
+        case 'heat':
+          modeButtons.push(
+            <TouchableHighlight onTouch={() => changeMode('heat')} key="heat">
+              <Icon name="fire" style={[styles.heat, styles.modeIcon]} />
+            </TouchableHighlight>,
+          );
+          break;
+        case 'fan_only':
+          modeButtons.push(
+            <TouchableHighlight
+              onTouch={() => changeMode('fan_only')}
+              key="fan_only">
+              <Icon name="fan" style={[styles.fan_only, styles.modeIcon]} />
+            </TouchableHighlight>,
+          );
+          break;
+        default:
+          modeButtons.push(
+            <TouchableHighlight onTouch={() => changeMode('off')} key="off">
+              <Icon name="fan-off" style={[styles.fan_off, styles.modeIcon]} />
+            </TouchableHighlight>,
+          );
+          break;
+      }
+    });
+    return modeButtons;
+  };
+
+  const changeMode = (mode) => {
+    console.log(`Changing Mode to ${mode}`);
+  };
+
   const tempDown = () => {
     console.log('Lower');
   };
@@ -158,6 +224,7 @@ export const Climate = ({data, mqttClient, deviceName}) => {
               />
             </TouchableHighlight>
           </View>
+          <View style={styles.climateModes}>{climateModes()}</View>
         </View>
       </Overlay>
     </Card>
@@ -260,7 +327,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
   },
   dialog: {
-    alignItems: 'center',
+    alignItems: 'stretch',
   },
   modelTempsWrapper: {
     marginTop: 20,
@@ -270,5 +337,14 @@ const styles = StyleSheet.create({
   },
   modelTargetTemp: {
     marginTop: 30,
+    justifyContent: 'center',
+  },
+  climateModes: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 100,
+  },
+  modeIcon: {
+    fontSize: 45,
   },
 });
