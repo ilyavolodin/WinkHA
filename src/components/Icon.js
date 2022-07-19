@@ -10,6 +10,7 @@ export const Icon = ({
   iconStyles = [],
   badgeStyles = [],
   style,
+  removeBackground = false,
 }) => {
   return (
     <View style={[styles.iconWrapper, globalStyles.centeredContent, style]}>
@@ -18,7 +19,7 @@ export const Icon = ({
         style={[
           styles.mainIcon(size),
           globalStyles.disabled,
-          globalStyles.disabledBackground,
+          removeBackground ? '' : globalStyles.disabledBackground,
           globalStyles.circle(size * 1.75),
           ...iconStyles,
         ]}

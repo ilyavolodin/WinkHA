@@ -1,17 +1,31 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
+import Carousel from 'react-native-snap-carousel';
 
-export const MultiBar = ({firstPage, secondPage, toggle}) => {
-  const [page, setPage] = useState(true);
+export const MultiBar = ({pages}) => {
+  const [width, setWidth] = useState(Dimensions.get('window').width);
 
-  if (toggle && typeof toggle === 'function') {
-    toggle(() => setPage(!page));
+  if (!Array.isArray(pages)) {
+    throw new Error('Pages have to be an array of React components');
   }
 
+  const items = pages.map((value, index) => index);
+
+  const renderItems = ({index}) => pages[index];
+
   return (
-    <View style={styles.multiBar}>
-      {page && firstPage}
-      {!page && secondPage}
+    <View
+      style={styles.multiBar}
+      onLayout={(event) => {
+        setWidth(event.nativeEvent.layout.width);
+      }}>
+      <Carousel
+        layout={'default'}
+        data={items}
+        sliderWidth={width}
+        itemWidth={width}
+        renderItem={renderItems}
+      />
     </View>
   );
 };

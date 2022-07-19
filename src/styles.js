@@ -27,7 +27,8 @@ const tokens = {
     blue: '43, 154, 249',
     yellow: '239, 189, 7',
     normal: '33, 33, 33',
-    lightGrey: '204, 204, 204',
+    grey: '204, 204, 204',
+    lightGrey: '230, 230, 230',
     white: '255, 255, 255',
     black: '0, 0, 0',
   },
@@ -139,6 +140,9 @@ const globalStyles = StyleSheet.create({
   whiteBackground: {
     backgroundColor: `rgb(${tokens.colors.white})`,
   },
+  grayBackground: {
+    backgroundColor: `rgb(${tokens.colors.lightGrey})`,
+  },
   transparentBackground: {
     backgroundColor: 'transparent',
   },
@@ -163,7 +167,7 @@ const globalStyles = StyleSheet.create({
     color: `rgb(${tokens.colors.white})`,
   },
   border: {
-    borderColor: `rgb(${tokens.colors.lightGrey})`,
+    borderColor: `rgb(${tokens.colors.grey})`,
     borderWidth: 2,
   },
   borderRounded: {

@@ -4,6 +4,7 @@ import {globalStyles, tokens} from '../styles';
 import {Card} from './Card';
 import {Icon} from './Icon';
 import {MultiBar} from './MultiBar';
+import {Pill} from './Pill';
 
 export const Climate = ({data, mqttClient, deviceName}) => {
   const hvacModes = {
@@ -49,23 +50,23 @@ export const Climate = ({data, mqttClient, deviceName}) => {
     data.attributes.hvac_modes.forEach((item) => {
       const hvacModeIconStyle = [
         hvacModes[item] ? hvacModes[item].iconStyle : globalStyles.disabled,
-        globalStyles.transparentBackground,
       ];
       modeButtons.push(
         <TouchableHighlight
-          onTouch={() => changeMode(item)}
+          onPress={() => changeMode(item)}
           key={item}
           style={[
             globalStyles.borderRounded,
             item === data.state
               ? hvacModes[item].backgroundStyle
-              : globalStyles.disabledBackground,
+              : globalStyles.grayBackground,
             styles.hvacModeButton,
           ]}>
           <Icon
             name={hvacModes[item] ? hvacModes[item].icon : hvacModes.off.icon}
             iconStyles={hvacModeIconStyle}
             size={tokens.iconSizes.small}
+            removeBackground
           />
         </TouchableHighlight>,
       );
@@ -98,6 +99,7 @@ export const Climate = ({data, mqttClient, deviceName}) => {
           <Icon
             name={data.attributes.icon || 'home-thermometer-outline'}
             badgeName={hvacModes[data.state].icon}
+            badgeStyles={[hvacModes[data.state].backgroundStyle]}
             style={[styles.icon]}
           />
           <View>
@@ -118,12 +120,31 @@ export const Climate = ({data, mqttClient, deviceName}) => {
       <View style={styles.bottomRow}>
         <MultiBar
           toggle={toggleMultiBarSetup}
-          firstPage={<View style={styles.hvacModesList}>{climateModes()}</View>}
-          secondPage={
-            <TouchableHighlight onPress={() => multiBarToggle.current()}>
-              <View />
-            </TouchableHighlight>
-          }
+          pages={[
+            <View style={styles.hvacModesList}>{climateModes()}</View>,
+            <View>
+              <Pill>
+                <TouchableHighlight onPress={tempDown}>
+                  <Icon
+                    name="minus"
+                    removeBackground
+                    size={tokens.iconSizes.small}
+                    iconStyles={[globalStyles.normalColor]}
+                  />
+                </TouchableHighlight>
+                <Text style={[globalStyles.textLarge, globalStyles.bold]}>
+                  {data.attributes.temperature}°
+                </Text>
+                <TouchableHighlight onPress={tempUp}>
+                  <Icon
+                    name="plus"
+                    removeBackground
+                    size={tokens.iconSizes.small}
+                    iconStyles={[globalStyles.normalColor]}/>
+                </TouchableHighlight>
+              </Pill>
+            </View>,
+          ]}
         />
       </View>
     </Card>
