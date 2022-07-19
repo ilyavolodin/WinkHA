@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import {globalStyles, tokens} from '../styles';
 import {Card} from './Card';
@@ -53,7 +53,7 @@ export const Climate = ({data, mqttClient, deviceName}) => {
       ];
       modeButtons.push(
         <TouchableHighlight
-          onPress={() => changeMode(item)}
+          onPress={() => change(item, data.attributes.temperature)}
           key={item}
           style={[
             globalStyles.borderRounded,
@@ -74,22 +74,26 @@ export const Climate = ({data, mqttClient, deviceName}) => {
     return modeButtons;
   };
 
-  const changeMode = (mode) => {
-    console.log(`Changing Mode to ${mode}`);
-  };
+  const payload = (mode, temp) => ({
+    target: `${data.class}.${deviceName}`,
+    service: 'climate.set_temperature',
+    class: data.class,
+    serviceName: 'set_temperature',
+    data: {
+      hvac_mode: mode,
+      temperature: temp,
+    },
+  });
 
-  const tempDown = () => {
-    console.log('Lower');
-  };
-
-  const tempUp = () => {
-    console.log('Higher');
-  };
-
-  const multiBarToggle = useRef();
-
-  const toggleMultiBarSetup = (ref) => {
-    multiBarToggle.current = ref;
+  const change = (mode, temperature) => {
+    if (mqttClient) {
+      mqttClient.publish(
+        'WinkHA/actions/LivingRoom',
+        JSON.stringify(payload(mode, temperature)),
+        1,
+        false,
+      );
+    }
   };
 
   return (
@@ -119,12 +123,14 @@ export const Climate = ({data, mqttClient, deviceName}) => {
       </View>
       <View style={styles.bottomRow}>
         <MultiBar
-          toggle={toggleMultiBarSetup}
           pages={[
             <View style={styles.hvacModesList}>{climateModes()}</View>,
             <View>
               <Pill>
-                <TouchableHighlight onPress={tempDown}>
+                <TouchableHighlight
+                  onPress={() =>
+                    change(data.state, data.attributes.temperature - 1)
+                  }>
                   <Icon
                     name="minus"
                     removeBackground
@@ -135,12 +141,16 @@ export const Climate = ({data, mqttClient, deviceName}) => {
                 <Text style={[globalStyles.textLarge, globalStyles.bold]}>
                   {data.attributes.temperature}°
                 </Text>
-                <TouchableHighlight onPress={tempUp}>
+                <TouchableHighlight
+                  onPress={() =>
+                    change(data.state, data.attributes.temperature + 1)
+                  }>
                   <Icon
                     name="plus"
                     removeBackground
                     size={tokens.iconSizes.small}
-                    iconStyles={[globalStyles.normalColor]}/>
+                    iconStyles={[globalStyles.normalColor]}
+                  />
                 </TouchableHighlight>
               </Pill>
             </View>,

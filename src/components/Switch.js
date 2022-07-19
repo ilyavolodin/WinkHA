@@ -20,7 +20,6 @@ export const Switch = ({data, mqttClient, deviceName}) => {
   };
 
   const sendCommand = () => {
-    console.log('Sending command to mqtt');
     if (mqttClient) {
       mqttClient.publish(
         'WinkHA/actions/LivingRoom',
