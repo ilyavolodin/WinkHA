@@ -2,6 +2,8 @@ import React from 'react';
 import {StyleSheet, TouchableHighlight, View, Modal} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import {globalStyles, tokens} from '../styles';
+
 export const Overlay = ({visible, changeVisibility, children}) => {
   return (
     <Modal
@@ -11,12 +13,20 @@ export const Overlay = ({visible, changeVisibility, children}) => {
       onRequestClose={() => {
         changeVisibility(!visible);
       }}>
-      <View style={styles.modalBackground}>
-        <View style={styles.modal}>
+      <View style={[globalStyles.fullSize, styles.modalBackground]}>
+        <View
+          style={[
+            globalStyles.borderRounded,
+            globalStyles.fullSize,
+            styles.modal,
+          ]}>
           <TouchableHighlight
             styles={styles.backButtonTouch}
             onPress={() => changeVisibility(!visible)}>
-            <Icon name="chevron-left" style={styles.backButton} />
+            <Icon
+              name="chevron-left"
+              style={[globalStyles.iconLarge, styles.backButton]}
+            />
           </TouchableHighlight>
           <View>{children}</View>
         </View>
@@ -27,20 +37,14 @@ export const Overlay = ({visible, changeVisibility, children}) => {
 
 const styles = StyleSheet.create({
   modalBackground: {
-    width: '100%',
-    height: '100%',
     padding: 30,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: `rgba(${tokens.colors.black}, .5)`,
   },
   modal: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 12,
     padding: 15,
-    backgroundColor: 'white',
+    backgroundColor: `rgb(${tokens.colors.white})`,
   },
   backButton: {
-    fontSize: 50,
     marginLeft: -15,
     marginTop: -15,
   },
