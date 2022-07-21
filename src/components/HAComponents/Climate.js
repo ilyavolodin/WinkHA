@@ -1,10 +1,11 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
-import {globalStyles, tokens} from '../styles';
-import {Card} from './Card';
-import {Icon} from './Icon';
-import {MultiBar} from './MultiBar';
-import {Pill} from './Pill';
+import {globalStyles, tokens} from '../../styles';
+import {Button} from '../Button';
+import {Card} from '../Card';
+import {Icon} from '../Icon';
+import {MultiBar} from '../MultiBar';
+import {Pill} from '../Pill';
 
 export const Climate = ({data, mqttClient, deviceName}) => {
   const hvacModes = {
@@ -52,14 +53,11 @@ export const Climate = ({data, mqttClient, deviceName}) => {
         hvacModes[item] ? hvacModes[item].iconStyle : globalStyles.disabled,
       ];
       modeButtons.push(
-        <TouchableHighlight
+        <Button
           onPress={() => change(item, data.attributes.temperature)}
           key={item}
           style={[
-            globalStyles.borderRounded,
-            item === data.state
-              ? hvacModes[item].backgroundStyle
-              : globalStyles.grayBackground,
+            item === data.state ? hvacModes[item].backgroundStyle : '',
             styles.hvacModeButton,
           ]}>
           <Icon
@@ -68,7 +66,7 @@ export const Climate = ({data, mqttClient, deviceName}) => {
             size={tokens.iconSizes.small}
             removeBackground
           />
-        </TouchableHighlight>,
+        </Button>,
       );
     });
     return modeButtons;

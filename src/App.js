@@ -1,8 +1,9 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {SafeAreaView, StyleSheet, ScrollView, View, Text} from 'react-native';
 
-import {Switch} from './components/Switch';
-import {Climate} from './components/Climate';
+import {Switch} from './components/HAComponents/Switch';
+import {Climate} from './components/HAComponents/Climate';
+import {Cover} from './components/HAComponents/Cover';
 import {connect} from './data';
 
 const App = () => {
@@ -30,6 +31,16 @@ const App = () => {
     if (entity.class === 'climate') {
       return (
         <Climate
+          data={entity}
+          mqttClient={mqttClient.current}
+          key={itemName}
+          deviceName={itemName}
+        />
+      );
+    }
+    if (entity.class === 'cover') {
+      return (
+        <Cover
           data={entity}
           mqttClient={mqttClient.current}
           key={itemName}

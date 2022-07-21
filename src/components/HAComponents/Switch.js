@@ -1,8 +1,8 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
-import {Icon} from './Icon';
-import {Card} from './Card';
-import {globalStyles} from '../styles';
+import {Icon} from '../Icon';
+import {Card} from '../Card';
+import {globalStyles} from '../../styles';
 
 export const Switch = ({data, mqttClient, deviceName}) => {
   const iconStyle = [];

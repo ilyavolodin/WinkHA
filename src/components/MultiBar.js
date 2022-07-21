@@ -1,13 +1,20 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Dimensions} from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 
-export const MultiBar = ({pages}) => {
+export const MultiBar = ({pages, getMultiBarRef = () => {}}) => {
   const [width, setWidth] = useState(Dimensions.get('window').width);
+  let carousel = null;
 
   if (!Array.isArray(pages)) {
     throw new Error('Pages have to be an array of React components');
   }
+
+  useEffect(() => {
+    if (carousel) {
+      getMultiBarRef(carousel);
+    }
+  }, [carousel, getMultiBarRef]);
 
   const items = pages.map((value, index) => index);
 
@@ -20,6 +27,9 @@ export const MultiBar = ({pages}) => {
         setWidth(event.nativeEvent.layout.width);
       }}>
       <Carousel
+        ref={(c) => {
+          carousel = c;
+        }}
         layout={'default'}
         data={items}
         sliderWidth={width}
