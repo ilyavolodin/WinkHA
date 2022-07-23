@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {SafeAreaView, StyleSheet, ScrollView, View, Text} from 'react-native';
+import RNBootSplash from 'react-native-bootsplash';
 
 import {Switch} from './components/HAComponents/Switch';
 import {Climate} from './components/HAComponents/Climate';
 import {Cover} from './components/HAComponents/Cover';
 import {connect} from './data';
-import { Card } from './components/Card';
-import { Light } from './components/HAComponents/Light';
+import {Card} from './components/Card';
+import {Light} from './components/HAComponents/Light';
 
 const App = () => {
   const [state, setState] = useState([]);
@@ -14,6 +15,7 @@ const App = () => {
   useEffect(() => {
     const mqttConnect = async () => {
       mqttClient.current = await connect(setState);
+      RNBootSplash.hide();
     };
     mqttConnect();
   }, []);
