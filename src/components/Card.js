@@ -20,7 +20,7 @@ export const Card = ({children, slots = 1, style}) => {
 
 const styles = StyleSheet.create({
   card: {
-    height: '25%',
+    height: '24%',
     margin: 4,
   },
   oneCell: {

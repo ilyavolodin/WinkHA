@@ -38,6 +38,7 @@ const tokens = {
   },
   borderRadius: {
     normal: 12,
+    small: 5,
   },
 };
 

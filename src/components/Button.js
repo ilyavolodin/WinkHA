@@ -2,12 +2,13 @@ import React from 'react';
 import {StyleSheet, TouchableHighlight} from 'react-native';
 import {globalStyles} from '../styles';
 
-export const Button = ({children, onPress, style}) => {
+export const Button = ({children, onPress, style, type = 'normal'}) => {
   let buttonStyles = [
     globalStyles.grayBackground,
     globalStyles.borderRounded,
     globalStyles.centeredContent,
     styles.button,
+    type === 'small' ? styles.small : styles.normal,
   ];
   if (style && Array.isArray(buttonStyles)) {
     buttonStyles = buttonStyles.concat(style);
@@ -23,7 +24,13 @@ export const Button = ({children, onPress, style}) => {
 
 const styles = StyleSheet.create({
   button: {
-    paddingHorizontal: 5,
     paddingVertical: 2,
+  },
+  normal: {
+    paddingHorizontal: 5,
+  },
+  small: {
+    paddingHorizontal: 1,
+    marginHorizontal: -5,
   },
 });

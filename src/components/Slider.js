@@ -1,10 +1,19 @@
-import React, {useState} from 'react';
+import React, {useCallback} from 'react';
 import {Slider as NativeSlider} from '@miblanchard/react-native-slider';
 import {View, StyleSheet} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import * as Color from 'color';
 import {globalStyles, tokens} from '../styles';
 
-export const Slider = ({value: sliderValue = 0, onChange, style}) => {
-  const [value, setValue] = useState(sliderValue);
+export const Slider = ({
+  value = 0,
+  onChange,
+  style,
+  type = 'standard',
+  min = 0,
+  max = 100,
+  disabled,
+}) => {
   let sliderStyles = [
     globalStyles.grayBackground,
     globalStyles.borderRounded,
@@ -16,80 +25,214 @@ export const Slider = ({value: sliderValue = 0, onChange, style}) => {
     sliderStyles.push(style);
   }
 
+  const processChange = useCallback(
+    ([x]) => {
+      switch (type) {
+        case 'standard':
+        case 'light':
+        case 'colorTemp':
+          onChange(x);
+          break;
+        case 'color':
+          const color = Color.hsv(360 * (100 / (x || 1)), 100, 100);
+          onChange(color.rgb().array());
+          break;
+      }
+    },
+    [type, onChange],
+  );
+
   return (
-    <View style={styles.container}>
+    <View style={styles.base.container}>
       <View
         style={[
-          styles.left,
-          value !== 0 ? styles.blueBackground : styles.grayBackground,
+          styles.base.left,
+          styles[type].styles.left,
+          value !== min
+            ? styles[type].styles.activeBackground
+            : styles[type].styles.inactiveBackground,
         ]}
       />
       <NativeSlider
-        containerStyle={styles.innerContainer}
-        trackStyle={styles.track}
-        minimumValue={0}
-        maximumValue={100}
-        minimumTrackTintColor={`rgb(${tokens.colors.blue})`}
-        maximumTrackTintColor={`rgb(${tokens.colors.lightGrey})`}
+        containerStyle={styles.base.innerContainer}
+        trackStyle={[styles.base.track, styles[type].styles.track]}
+        minimumValue={min}
+        maximumValue={max}
+        minimumTrackTintColor={styles[type].colors.left}
+        maximumTrackTintColor={styles[type].colors.right}
         value={value}
-        onSlidingComplete={onChange}
-        onValueChange={([x]) => setValue(x)}
+        onSlidingComplete={processChange}
         trackClickable
         step={1}
-        thumbStyle={styles.thumb}
+        thumbStyle={styles[type].styles.thumb}
         thumbTouchSize={{width: 50, hight: 80}}
+        disabled={disabled}
       />
       <View
         style={[
-          styles.right,
-          value !== 100 ? styles.grayBackground : styles.blueBackground,
+          styles.base.right,
+          styles[type].styles.right,
+          value !== max
+            ? styles[type].styles.inactiveBackground
+            : styles[type].styles.activeBackground,
         ]}
       />
+      {(type === 'color' || type === 'colorTemp') && (
+        <View style={[styles.base.gradient]}>
+          <LinearGradient
+            style={[globalStyles.fullSize, styles.base.gradientBlock]}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={styles[type].colors.gradient}
+            locations={styles[type].colors.locations}
+          />
+        </View>
+      )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    height: '100%',
-    flexDirection: 'row',
-    paddingHorizontal: 10,
+const styles = {
+  base: {
+    container: {
+      flex: 1,
+      alignItems: 'stretch',
+      justifyContent: 'center',
+      height: '100%',
+      flexDirection: 'row',
+      paddingHorizontal: 10,
+    },
+    innerContainer: {
+      width: '100%',
+      height: '100%',
+      position: 'relative',
+      flex: 1,
+      zIndex: 2,
+    },
+    track: {
+      height: '100%',
+    },
+    left: {
+      borderTopLeftRadius: tokens.borderRadius.normal,
+      borderBottomLeftRadius: tokens.borderRadius.normal,
+      height: '100%',
+      flex: 0,
+    },
+    right: {
+      borderTopRightRadius: tokens.borderRadius.normal,
+      borderBottomRightRadius: tokens.borderRadius.normal,
+      height: '100%',
+      flex: 0,
+    },
+    gradient: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      zIndex: 1,
+      marginHorizontal: 10,
+    },
+    gradientBlock: {
+      borderRadius: tokens.borderRadius.normal,
+    },
   },
-  innerContainer: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-    flex: 1,
+  standard: {
+    styles: StyleSheet.create({
+      thumb: {
+        backgroundColor: 'transparent',
+        height: '100%',
+        width: 0,
+      },
+      activeBackground: {
+        backgroundColor: `rgb(${tokens.colors.blue})`,
+      },
+      inactiveBackground: {
+        backgroundColor: `rgb(${tokens.colors.lightGrey})`,
+      },
+      left: {
+        width: 10,
+      },
+      right: {
+        width: 10,
+      },
+    }),
+    colors: {
+      left: `rgb(${tokens.colors.blue})`,
+      right: `rgb(${tokens.colors.lightGrey})`,
+    },
   },
-  track: {
-    height: '100%',
+  light: {
+    styles: StyleSheet.create({
+      thumb: {
+        backgroundColor: 'transparent',
+        height: '100%',
+        width: 0,
+      },
+      activeBackground: {
+        backgroundColor: `rgb(${tokens.colors.yellow})`,
+      },
+      inactiveBackground: {
+        backgroundColor: `rgb(${tokens.colors.lightGrey})`,
+      },
+      left: {
+        width: 10,
+      },
+      right: {
+        width: 10,
+      },
+    }),
+    colors: {
+      left: `rgb(${tokens.colors.yellow})`,
+      right: `rgb(${tokens.colors.lightGrey})`,
+    },
   },
-  left: {
-    borderTopLeftRadius: tokens.borderRadius.normal,
-    borderBottomLeftRadius: tokens.borderRadius.normal,
-    height: '100%',
-    width: 10,
-    flex: 0,
+  colorTemp: {
+    styles: StyleSheet.create({
+      thumb: {
+        backgroundColor: `rgb(${tokens.colors.white})`,
+        borderRadius: tokens.borderRadius.small,
+        borderWidth: 1,
+        borderColor: `rgb(${tokens.colors.lightGrey})`,
+        height: '100%',
+        width: 15,
+      },
+      inactiveBackground: {
+        backgroundColor: 'transparent',
+      },
+      activeBackground: {
+        backgroundColor: 'transparent',
+      },
+    }),
+    colors: {
+      left: 'transparent',
+      right: 'transparent',
+      gradient: ['#FFF', '#ffa200'],
+      locations: [0, 1],
+    },
   },
-  right: {
-    borderTopRightRadius: tokens.borderRadius.normal,
-    borderBottomRightRadius: tokens.borderRadius.normal,
-    height: '100%',
-    width: 10,
-    flex: 0,
+  color: {
+    styles: StyleSheet.create({
+      thumb: {
+        backgroundColor: `rgb(${tokens.colors.white})`,
+        borderRadius: tokens.borderRadius.small,
+        borderWidth: 1,
+        borderColor: `rgb(${tokens.colors.lightGrey})`,
+        height: '100%',
+        width: 15,
+      },
+      inactiveBackground: {
+        backgroundColor: 'transparent',
+      },
+      activeBackground: {
+        backgroundColor: 'transparent',
+      },
+    }),
+    colors: {
+      left: 'transparent',
+      right: 'transparent',
+      gradient: ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#f00'],
+      locations: [0, 0.17, 0.33, 0.5, 0.66, 0.83, 1],
+    },
   },
-  thumb: {
-    backgroundColor: 'transparent',
-    height: '100%',
-    width: 0,
-  },
-  blueBackground: {
-    backgroundColor: `rgb(${tokens.colors.blue})`,
-  },
-  grayBackground: {
-    backgroundColor: `rgb(${tokens.colors.lightGrey})`,
-  },
-});
+};

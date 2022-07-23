@@ -5,6 +5,8 @@ import {Switch} from './components/HAComponents/Switch';
 import {Climate} from './components/HAComponents/Climate';
 import {Cover} from './components/HAComponents/Cover';
 import {connect} from './data';
+import { Card } from './components/Card';
+import { Light } from './components/HAComponents/Light';
 
 const App = () => {
   const [state, setState] = useState([]);
@@ -48,10 +50,22 @@ const App = () => {
         />
       );
     }
+    if (entity.class === 'light') {
+      return (
+        <Light
+          data={entity}
+          mqttClient={mqttClient.current}
+          key={itemName}
+          deviceName={itemName}
+        />
+      );
+    }
     return (
-      <Text>
-        {entity.attributes.friendly_name} - {entity.state}
-      </Text>
+      <Card key={itemName}>
+        <Text>
+          {entity.attributes.friendly_name} - {entity.state}
+        </Text>
+      </Card>
     );
   };
   // console.log(state);

@@ -116,13 +116,14 @@ export const Cover = ({data, mqttClient, deviceName}) => {
             </View>,
             <View style={styles.sliderRow}>
               <Slider
-                onChange={([x]) => change(x)}
+                onChange={change}
                 style={styles.slider}
                 value={data.attributes.position}
               />
               <Button
                 onPress={() => multiBar.current.snapToItem(0)}
-                styles={styles.buttons}>
+                styles={styles.buttons}
+                type="small">
                 <Icon
                   name="gesture-tap-button"
                   removeBackground
