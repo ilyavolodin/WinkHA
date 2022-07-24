@@ -9,7 +9,7 @@ import {Slider} from '../Slider';
 import {Button} from '../Button';
 import Color from 'color';
 
-export const Light = ({data, mqttClient, deviceName}) => {
+export const Light = ({data, mqttClient, deviceName, topic}) => {
   const [page, setPage] = useState(0);
   const multiBar = useRef(null);
   const supportedFeatures = useMemo(
@@ -58,7 +58,7 @@ export const Light = ({data, mqttClient, deviceName}) => {
   const sendCommandToggle = () => {
     if (mqttClient) {
       mqttClient.publish(
-        'WinkHA/actions/LivingRoom',
+        `WinkHA/actions/${topic}`,
         JSON.stringify(payloadToggle),
         1,
         false,

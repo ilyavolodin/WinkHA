@@ -1,11 +1,11 @@
 import MQTT from 'sp-react-native-mqtt';
 
-export const connect = async (setState) => {
+export const connect = async (setState, deviceName, mqttInfo) => {
   const client = await MQTT.createClient({
-    uri: 'mqtt://homeassistant.home:1883',
+    uri: `mqtt://${mqttInfo.serverUrl}:${mqttInfo.serverPort}`,
     clientId: 'WinkHA',
-    user: 'mqttuser',
-    pass: 'MQTT365Conant',
+    user: mqttInfo.username,
+    pass: mqttInfo.password,
     auth: true,
   });
 
@@ -15,8 +15,8 @@ export const connect = async (setState) => {
   client.on('message', (msg) => {
     const parsedTopic = msg.topic.split('/');
     const itemName = parsedTopic[parsedTopic.length - 1];
-    const deviceName = parsedTopic[parsedTopic.length - 2];
-    if (parsedTopic[0] === 'WinkHA' && itemName !== 'list') {
+    console.log(msg.topic);
+    if (msg.topic.startsWith(`WinkHA/${deviceName}/entities/`)) {
       const [state, deviceClass, attributes] = JSON.parse(msg.data);
       const item = {
         [itemName]: {
@@ -26,10 +26,11 @@ export const connect = async (setState) => {
         },
       };
       setState((prevState) => {
-        const index = prevState.findIndex(
+        const oldState = prevState || [];
+        const index = oldState.findIndex(
           (element) => Object.keys(element)[0] === itemName,
         );
-        const stateClone = [...prevState];
+        const stateClone = [...oldState];
         if (index >= 0) {
           stateClone[index] = item;
         } else {
@@ -53,12 +54,12 @@ export const connect = async (setState) => {
         });
         return sorted;
       });
-    } else if (itemName === 'list') {
+    } else if (msg.topic === `WinkHA/${deviceName}/config`) {
       list = JSON.parse(msg.data);
     }
   });
   client.on('closed', () => console.log('connection closed'));
   client.connect();
-  client.subscribe('WinkHA/LivingRoom/+', 0);
+  client.subscribe(`WinkHA/${deviceName}/#`, 0);
   return client;
 };

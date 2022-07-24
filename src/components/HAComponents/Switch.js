@@ -4,7 +4,7 @@ import {Icon} from '../Icon';
 import {Card} from '../Card';
 import {globalStyles} from '../../styles';
 
-export const Switch = ({data, mqttClient, deviceName}) => {
+export const Switch = ({data, mqttClient, deviceName, topic}) => {
   const iconStyle = [];
   if (data.state !== 'off') {
     iconStyle.push(globalStyles.yellow, globalStyles.yellowBackground);
@@ -22,7 +22,7 @@ export const Switch = ({data, mqttClient, deviceName}) => {
   const sendCommand = () => {
     if (mqttClient) {
       mqttClient.publish(
-        'WinkHA/actions/LivingRoom',
+        `WinkHA/actions/${topic}`,
         JSON.stringify(payload),
         1,
         false,

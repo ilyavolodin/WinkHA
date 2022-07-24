@@ -6,6 +6,7 @@ const tokens = {
     small: 14,
     normal: 16,
     large: 18,
+    textInput: 25,
     xLarge: 35,
     xxLarge: 50,
     xxxLarge: 65,
@@ -31,6 +32,7 @@ const tokens = {
     lightGrey: '230, 230, 230',
     white: '255, 255, 255',
     black: '0, 0, 0',
+    ha: '65, 189, 245',
   },
   fontWeight: {
     normal: '400',
@@ -143,6 +145,9 @@ const globalStyles = StyleSheet.create({
   },
   grayBackground: {
     backgroundColor: `rgb(${tokens.colors.lightGrey})`,
+  },
+  haBackground: {
+    backgroundColor: `rgb(${tokens.colors.ha})`,
   },
   transparentBackground: {
     backgroundColor: 'transparent',

@@ -7,7 +7,7 @@ import {Icon} from '../Icon';
 import {MultiBar} from '../MultiBar';
 import {Pill} from '../Pill';
 
-export const Climate = ({data, mqttClient, deviceName}) => {
+export const Climate = ({data, mqttClient, deviceName, topic}) => {
   const hvacModes = {
     cool: {
       icon: 'snowflake',
@@ -86,7 +86,7 @@ export const Climate = ({data, mqttClient, deviceName}) => {
   const change = (mode, temperature) => {
     if (mqttClient) {
       mqttClient.publish(
-        'WinkHA/actions/LivingRoom',
+        `WinkHA/actions/${topic}`,
         JSON.stringify(payload(mode, temperature)),
         1,
         false,

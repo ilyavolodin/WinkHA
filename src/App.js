@@ -1,107 +1,65 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {SafeAreaView, StyleSheet, ScrollView, View, Text} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SafeAreaView} from 'react-native';
 import RNBootSplash from 'react-native-bootsplash';
-
-import {Switch} from './components/HAComponents/Switch';
-import {Climate} from './components/HAComponents/Climate';
-import {Cover} from './components/HAComponents/Cover';
+import {Regististration} from './Registration';
+import {Main} from './Main';
 import {connect} from './data';
-import {Card} from './components/Card';
-import {Light} from './components/HAComponents/Light';
 
 const App = () => {
-  const [state, setState] = useState([]);
+  const [appState, setAppState] = useState(null);
+  const [state, setState] = useState(null);
   let mqttClient = useRef(null);
   useEffect(() => {
-    const mqttConnect = async () => {
-      mqttClient.current = await connect(setState);
-      RNBootSplash.hide();
+    console.log('Connecting to mqtt server');
+    const getData = async () => {
+      if (!appState) {
+        console.log('Getting info from storage');
+        try {
+          const value = await AsyncStorage.getItem('@deviceName');
+          const info = await AsyncStorage.getItem('@mqttInfo');
+          if (value !== null && info !== null) {
+            console.log('Setting info');
+            setAppState({
+              deviceName: value,
+              mqttInfo: JSON.parse(info),
+            });
+          } else {
+            // close splash and go to registration
+            RNBootSplash.hide();
+          }
+        } catch (e) {
+          // error handling
+          console.log(e);
+        }
+      } else {
+        console.log('Connecting to mqtt', appState);
+        mqttClient.current = await connect(
+          setState,
+          appState.deviceName,
+          appState.mqttInfo,
+        );
+        if ((await RNBootSplash.getVisibilityStatus()) === 'visible') {
+          RNBootSplash.hide();
+        }
+      }
     };
-    mqttConnect();
-  }, []);
-  const content = (item) => {
-    const itemName = Object.keys(item)[0];
-    const entity = item[itemName];
-    if (entity.class === 'switch') {
-      return (
-        <Switch
-          data={entity}
-          mqttClient={mqttClient.current}
-          key={itemName}
-          deviceName={itemName}
-        />
-      );
-    }
-    if (entity.class === 'climate') {
-      return (
-        <Climate
-          data={entity}
-          mqttClient={mqttClient.current}
-          key={itemName}
-          deviceName={itemName}
-        />
-      );
-    }
-    if (entity.class === 'cover') {
-      return (
-        <Cover
-          data={entity}
-          mqttClient={mqttClient.current}
-          key={itemName}
-          deviceName={itemName}
-        />
-      );
-    }
-    if (entity.class === 'light') {
-      return (
-        <Light
-          data={entity}
-          mqttClient={mqttClient.current}
-          key={itemName}
-          deviceName={itemName}
-        />
-      );
-    }
-    return (
-      <Card key={itemName}>
-        <Text>
-          {entity.attributes.friendly_name} - {entity.state}
-        </Text>
-      </Card>
-    );
-  };
-  // console.log(state);
-  const items = state.map((item) => content(item));
+    getData();
+  }, [appState]);
+
   return (
     <SafeAreaView>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.scrollView}>
-        <View style={styles.body}>
-          <View style={styles.container}>{items}</View>
-        </View>
-      </ScrollView>
+      {state !== null ? (
+        <Main
+          deviceName={appState.deviceName}
+          mqttClient={mqttClient}
+          state={state}
+        />
+      ) : (
+        <Regististration updateAppState={setAppState} />
+      )}
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollView: {
-    height: '100%',
-  },
-  body: {
-    backgroundColor: '#EEE',
-    width: '100%',
-    height: '100%',
-    padding: 10,
-  },
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: '100%',
-    height: '100%',
-  },
-});
 
 export default App;

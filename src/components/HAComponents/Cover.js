@@ -7,7 +7,7 @@ import {MultiBar} from '../MultiBar';
 import {Button} from '../Button';
 import {Slider} from '../Slider';
 
-export const Cover = ({data, mqttClient, deviceName}) => {
+export const Cover = ({data, mqttClient, deviceName, topic}) => {
   const multiBar = useRef(null);
 
   const iconStyle = [];
@@ -37,7 +37,7 @@ export const Cover = ({data, mqttClient, deviceName}) => {
   const change = (position) => {
     if (mqttClient) {
       mqttClient.publish(
-        'WinkHA/actions/LivingRoom',
+        `WinkHA/actions/${topic}`,
         JSON.stringify(changePayload(position)),
         1,
         false,
@@ -48,7 +48,7 @@ export const Cover = ({data, mqttClient, deviceName}) => {
   const stop = () => {
     if (mqttClient) {
       mqttClient.publish(
-        'WinkHA/actions/LivingRoom',
+        `WinkHA/actions/${topic}`,
         JSON.stringify(stopPayload),
         1,
         false,
