@@ -5,6 +5,7 @@ import RNBootSplash from 'react-native-bootsplash';
 import {Regististration} from './Registration';
 import {Main} from './Main';
 import {connect} from './data';
+import {ErrorBoundary} from './components/ErrorBoundary';
 
 const App = () => {
   const [appState, setAppState] = useState(null);
@@ -49,15 +50,17 @@ const App = () => {
 
   return (
     <SafeAreaView>
-      {state !== null ? (
-        <Main
-          deviceName={appState.deviceName}
-          mqttClient={mqttClient}
-          state={state}
-        />
-      ) : (
-        <Regististration updateAppState={setAppState} />
-      )}
+      <ErrorBoundary>
+        {state !== null ? (
+          <Main
+            deviceName={appState.deviceName}
+            mqttClient={mqttClient}
+            state={state}
+          />
+        ) : (
+          <Regististration updateAppState={setAppState} />
+        )}
+      </ErrorBoundary>
     </SafeAreaView>
   );
 };

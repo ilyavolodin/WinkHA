@@ -15,9 +15,10 @@ export const connect = async (setState, deviceName, mqttInfo) => {
   client.on('message', (msg) => {
     const parsedTopic = msg.topic.split('/');
     const itemName = parsedTopic[parsedTopic.length - 1];
-    console.log(msg.topic);
+    console.log(msg.topic, deviceName);
     if (msg.topic.startsWith(`WinkHA/${deviceName}/entities/`)) {
       const [state, deviceClass, attributes] = JSON.parse(msg.data);
+      console.log(state, deviceClass, attributes);
       const item = {
         [itemName]: {
           ...state,

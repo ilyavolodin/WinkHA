@@ -66,44 +66,50 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
     }
   };
 
-  const payloadProps = (type, value) => {
-    const result = {
-      target: `${data.class}.${deviceName}`,
-      service: 'light.turn_on',
-      class: data.class,
-      serviceName: 'turn_on',
-      data: {},
-    };
-    switch (type) {
-      case 'brightness':
-        result.data = {
-          brightness: value,
-        };
-        break;
-      case 'color':
-        result.data = {
-          rgb_color: value,
-        };
-        break;
-      case 'colorTemp':
-        result.data = {
-          color_temp: value,
-        };
-        break;
-    }
-    return result;
-  };
+  const payloadProps = useCallback(
+    (type, value) => {
+      const result = {
+        target: `${data.class}.${deviceName}`,
+        service: 'light.turn_on',
+        class: data.class,
+        serviceName: 'turn_on',
+        data: {},
+      };
+      switch (type) {
+        case 'brightness':
+          result.data = {
+            brightness: value,
+          };
+          break;
+        case 'color':
+          result.data = {
+            rgb_color: value,
+          };
+          break;
+        case 'colorTemp':
+          result.data = {
+            color_temp: value,
+          };
+          break;
+      }
+      return result;
+    },
+    [data.class, deviceName],
+  );
 
-  const sendCommandProps = (type, value) => {
-    if (mqttClient) {
-      mqttClient.publish(
-        'WinkHA/actions/LivingRoom',
-        JSON.stringify(payloadProps(type, value)),
-        1,
-        false,
-      );
-    }
-  };
+  const sendCommandProps = useCallback(
+    (type, value) => {
+      if (mqttClient) {
+        mqttClient.publish(
+          'WinkHA/actions/LivingRoom',
+          JSON.stringify(payloadProps(type, value)),
+          1,
+          false,
+        );
+      }
+    },
+    [mqttClient, payloadProps],
+  );
 
   const colorToPosition = (color) => {
     return (Color(color).hsv().hue() / 360) * 100;
@@ -213,6 +219,7 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
     data.attributes.max_mireds,
     data.state,
     next,
+    sendCommandProps,
   ]);
 
   return (
