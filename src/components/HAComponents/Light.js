@@ -82,6 +82,7 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
           };
           break;
         case 'color':
+          console.log(value);
           result.data = {
             rgb_color: value,
           };
@@ -193,7 +194,7 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
             style={styles.slider}
             type="color"
             value={colorToPosition(data.attributes.rgb_color || ['#F00'])}
-            onChange={(x) => sendCommandProps('color', positionToRgb(x))}
+            onChange={(x) => sendCommandProps('color', x)}
             disabled={data.state === 'off'}
           />
           {Object.keys(features).length > 1 && (

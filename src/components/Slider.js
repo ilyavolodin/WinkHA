@@ -34,7 +34,7 @@ export const Slider = ({
           onChange(x);
           break;
         case 'color':
-          const color = Color.hsv(360 * (100 / (x || 1)), 100, 100);
+          const color = Color.hsv(360 * ((x || 1) / 100), 100, 100);
           onChange(color.rgb().array());
           break;
       }
