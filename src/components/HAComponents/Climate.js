@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import {globalStyles, tokens} from '../../styles';
 import {Button} from '../Button';
@@ -7,46 +7,46 @@ import {Icon} from '../Icon';
 import {MultiBar} from '../MultiBar';
 import {Pill} from '../Pill';
 
-export const Climate = ({data, mqttClient, deviceName, topic}) => {
-  const hvacModes = {
-    cool: {
-      icon: 'snowflake',
-      iconStyle: globalStyles.blue,
-      backgroundStyle: globalStyles.blueBackground,
-    },
-    heat: {
-      icon: 'fire',
-      iconStyle: globalStyles.red,
-      backgroundStyle: globalStyles.redBackground,
-    },
-    heat_cool: {
-      icon: 'autorenew',
-      iconStyle: globalStyles.green,
-      backgroundStyle: globalStyles.greenBackground,
-    },
-    auto: {
-      icon: 'autorenew',
-      iconStyle: globalStyles.green,
-      backgroundStyle: globalStyles.greenBackground,
-    },
-    dry: {
-      icon: 'water-percent',
-      iconStyle: globalStyles.yellow,
-      backgroundStyle: globalStyles.yellowBackground,
-    },
-    fan_only: {
-      icon: 'fan',
-      iconStyle: globalStyles.green,
-      backgroundStyle: globalStyles.greenBackground,
-    },
-    off: {
-      icon: 'fan-off',
-      iconStyle: globalStyles.disabled,
-      backgroundStyle: globalStyles.disabledBackground,
-    },
-  };
+const hvacModes = {
+  cool: {
+    icon: 'snowflake',
+    iconStyle: globalStyles.blue,
+    backgroundStyle: globalStyles.blueBackground,
+  },
+  heat: {
+    icon: 'fire',
+    iconStyle: globalStyles.red,
+    backgroundStyle: globalStyles.redBackground,
+  },
+  heat_cool: {
+    icon: 'autorenew',
+    iconStyle: globalStyles.green,
+    backgroundStyle: globalStyles.greenBackground,
+  },
+  auto: {
+    icon: 'autorenew',
+    iconStyle: globalStyles.green,
+    backgroundStyle: globalStyles.greenBackground,
+  },
+  dry: {
+    icon: 'water-percent',
+    iconStyle: globalStyles.yellow,
+    backgroundStyle: globalStyles.yellowBackground,
+  },
+  fan_only: {
+    icon: 'fan',
+    iconStyle: globalStyles.green,
+    backgroundStyle: globalStyles.greenBackground,
+  },
+  off: {
+    icon: 'fan-off',
+    iconStyle: globalStyles.disabled,
+    backgroundStyle: globalStyles.disabledBackground,
+  },
+};
 
-  const climateModes = () => {
+export const Climate = ({data, mqttClient, deviceName, topic}) => {
+  const climateModes = useCallback(() => {
     const modeButtons = [];
     data.attributes.hvac_modes.forEach((item) => {
       const hvacModeIconStyle = [
@@ -70,29 +70,40 @@ export const Climate = ({data, mqttClient, deviceName, topic}) => {
       );
     });
     return modeButtons;
-  };
+  }, [
+    change,
+    data.attributes.hvac_modes,
+    data.attributes.temperature,
+    data.state,
+  ]);
 
-  const payload = (mode, temp) => ({
-    target: `${data.class}.${deviceName}`,
-    service: 'climate.set_temperature',
-    class: data.class,
-    serviceName: 'set_temperature',
-    data: {
-      hvac_mode: mode,
-      temperature: temp,
+  const payload = useCallback(
+    (mode, temp) => ({
+      target: `${data.class}.${deviceName}`,
+      service: 'climate.set_temperature',
+      class: data.class,
+      serviceName: 'set_temperature',
+      data: {
+        hvac_mode: mode,
+        temperature: temp,
+      },
+    }),
+    [data.class, deviceName],
+  );
+
+  const change = useCallback(
+    (mode, temperature) => {
+      if (mqttClient) {
+        mqttClient.publish(
+          `WinkHA/actions/${topic}`,
+          JSON.stringify(payload(mode, temperature)),
+          1,
+          false,
+        );
+      }
     },
-  });
-
-  const change = (mode, temperature) => {
-    if (mqttClient) {
-      mqttClient.publish(
-        `WinkHA/actions/${topic}`,
-        JSON.stringify(payload(mode, temperature)),
-        1,
-        false,
-      );
-    }
-  };
+    [mqttClient, payload, topic],
+  );
 
   return (
     <Card slots={2} style={styles.card}>

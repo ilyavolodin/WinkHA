@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo, useCallback} from 'react';
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import {Icon} from '../Icon';
 import {Card} from '../Card';
@@ -12,14 +12,17 @@ export const Switch = ({data, mqttClient, deviceName, topic}) => {
     iconStyle.push(globalStyles.disabled, globalStyles.disabledBackground);
   }
 
-  const payload = {
-    target: `${data.class}.${deviceName}`,
-    service: 'switch.toggle',
-    class: data.class,
-    serviceName: 'toggle',
-  };
+  const payload = useMemo(
+    () => ({
+      target: `${data.class}.${deviceName}`,
+      service: 'switch.toggle',
+      class: data.class,
+      serviceName: 'toggle',
+    }),
+    [data.class, deviceName],
+  );
 
-  const sendCommand = () => {
+  const sendCommand = useCallback(() => {
     if (mqttClient) {
       mqttClient.publish(
         `WinkHA/actions/${topic}`,
@@ -28,7 +31,7 @@ export const Switch = ({data, mqttClient, deviceName, topic}) => {
         false,
       );
     }
-  };
+  }, [mqttClient, payload, topic]);
 
   return (
     <Card>

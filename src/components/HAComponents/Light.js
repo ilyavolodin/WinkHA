@@ -48,14 +48,17 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
     iconStyle.push(globalStyles.disabled, globalStyles.disabledBackground);
   }
 
-  const payloadToggle = {
-    target: `${data.class}.${deviceName}`,
-    service: 'light.toggle',
-    class: data.class,
-    serviceName: 'toggle',
-  };
+  const payloadToggle = useMemo(
+    () => ({
+      target: `${data.class}.${deviceName}`,
+      service: 'light.toggle',
+      class: data.class,
+      serviceName: 'toggle',
+    }),
+    [data.class, deviceName],
+  );
 
-  const sendCommandToggle = () => {
+  const sendCommandToggle = useCallback(() => {
     if (mqttClient) {
       mqttClient.publish(
         `WinkHA/actions/${topic}`,
@@ -64,7 +67,7 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
         false,
       );
     }
-  };
+  }, [mqttClient, payloadToggle, topic]);
 
   const payloadProps = useCallback(
     (type, value) => {
@@ -112,9 +115,9 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
     [mqttClient, payloadProps],
   );
 
-  const colorToPosition = (color) => {
+  const colorToPosition = useCallback((color) => {
     return (Color(color).hsv().hue() / 360) * 100;
-  };
+  }, []);
 
   const next = useCallback(() => {
     if (page < Object.keys(features).length - 1) {
@@ -207,14 +210,15 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
     return controls;
   }, [
     features,
-    data.attributes.rgb_color,
-    data.attributes.color_temp,
     data.attributes.brightness,
+    data.attributes.color_temp,
     data.attributes.min_mireds,
     data.attributes.max_mireds,
+    data.attributes.rgb_color,
     data.state,
     next,
     sendCommandProps,
+    colorToPosition,
   ]);
 
   return (

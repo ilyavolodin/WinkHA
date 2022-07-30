@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {StyleSheet, ScrollView, View, Text} from 'react-native';
 
 import {Switch} from './components/HAComponents/Switch';
@@ -8,61 +8,64 @@ import {Card} from './components/Card';
 import {Light} from './components/HAComponents/Light';
 
 export const Main = ({deviceName, state, mqttClient}) => {
-  const content = (item) => {
-    const itemName = Object.keys(item)[0];
-    const entity = item[itemName];
-    if (entity.class === 'switch') {
+  const content = useCallback(
+    (item) => {
+      const itemName = Object.keys(item)[0];
+      const entity = item[itemName];
+      if (entity.class === 'switch') {
+        return (
+          <Switch
+            data={entity}
+            mqttClient={mqttClient.current}
+            key={itemName}
+            deviceName={itemName}
+            topic={deviceName}
+          />
+        );
+      }
+      if (entity.class === 'climate') {
+        return (
+          <Climate
+            data={entity}
+            mqttClient={mqttClient.current}
+            key={itemName}
+            deviceName={itemName}
+            topic={deviceName}
+          />
+        );
+      }
+      if (entity.class === 'cover') {
+        return (
+          <Cover
+            data={entity}
+            mqttClient={mqttClient.current}
+            key={itemName}
+            deviceName={itemName}
+            topic={deviceName}
+          />
+        );
+      }
+      if (entity.class === 'light') {
+        return (
+          <Light
+            data={entity}
+            mqttClient={mqttClient.current}
+            key={itemName}
+            deviceName={itemName}
+            topic={deviceName}
+          />
+        );
+      }
       return (
-        <Switch
-          data={entity}
-          mqttClient={mqttClient.current}
-          key={itemName}
-          deviceName={itemName}
-          topic={deviceName}
-        />
+        <Card key={itemName}>
+          <Text>
+            {entity.attributes.friendly_name} - {entity.state}
+          </Text>
+        </Card>
       );
-    }
-    if (entity.class === 'climate') {
-      return (
-        <Climate
-          data={entity}
-          mqttClient={mqttClient.current}
-          key={itemName}
-          deviceName={itemName}
-          topic={deviceName}
-        />
-      );
-    }
-    if (entity.class === 'cover') {
-      return (
-        <Cover
-          data={entity}
-          mqttClient={mqttClient.current}
-          key={itemName}
-          deviceName={itemName}
-          topic={deviceName}
-        />
-      );
-    }
-    if (entity.class === 'light') {
-      return (
-        <Light
-          data={entity}
-          mqttClient={mqttClient.current}
-          key={itemName}
-          deviceName={itemName}
-          topic={deviceName}
-        />
-      );
-    }
-    return (
-      <Card key={itemName}>
-        <Text>
-          {entity.attributes.friendly_name} - {entity.state}
-        </Text>
-      </Card>
-    );
-  };
+    },
+    [deviceName, mqttClient],
+  );
   const items = state.map((item) => content(item));
   return (
     <ScrollView

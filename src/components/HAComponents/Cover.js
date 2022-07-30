@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useCallback, useMemo, useRef} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Icon} from '../Icon';
 import {Card} from '../Card';
@@ -17,35 +17,44 @@ export const Cover = ({data, mqttClient, deviceName, topic}) => {
     iconStyle.push(globalStyles.disabled, globalStyles.disabledBackground);
   }
 
-  const changePayload = (position) => ({
-    target: `${data.class}.${deviceName}`,
-    service: 'cover.set_cover_position',
-    class: data.class,
-    serviceName: 'set_cover_position',
-    data: {
-      position,
+  const changePayload = useCallback(
+    (position) => ({
+      target: `${data.class}.${deviceName}`,
+      service: 'cover.set_cover_position',
+      class: data.class,
+      serviceName: 'set_cover_position',
+      data: {
+        position,
+      },
+    }),
+    [data.class, deviceName],
+  );
+
+  const stopPayload = useMemo(
+    () => ({
+      target: `${data.class}.${deviceName}`,
+      service: 'cover.stop_cover',
+      class: data.class,
+      serviceName: 'stop_cover',
+    }),
+    [data.class, deviceName],
+  );
+
+  const change = useCallback(
+    (position) => {
+      if (mqttClient) {
+        mqttClient.publish(
+          `WinkHA/actions/${topic}`,
+          JSON.stringify(changePayload(position)),
+          1,
+          false,
+        );
+      }
     },
-  });
+    [changePayload, mqttClient, topic],
+  );
 
-  const stopPayload = {
-    target: `${data.class}.${deviceName}`,
-    service: 'cover.stop_cover',
-    class: data.class,
-    serviceName: 'stop_cover',
-  };
-
-  const change = (position) => {
-    if (mqttClient) {
-      mqttClient.publish(
-        `WinkHA/actions/${topic}`,
-        JSON.stringify(changePayload(position)),
-        1,
-        false,
-      );
-    }
-  };
-
-  const stop = () => {
+  const stop = useCallback(() => {
     if (mqttClient) {
       mqttClient.publish(
         `WinkHA/actions/${topic}`,
@@ -54,7 +63,7 @@ export const Cover = ({data, mqttClient, deviceName, topic}) => {
         false,
       );
     }
-  };
+  }, [mqttClient, stopPayload, topic]);
 
   return (
     <Card style={styles.card}>
