@@ -1,9 +1,14 @@
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet} from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 
-export const MultiBar = ({pages, getMultiBarRef = () => {}}) => {
-  const [width, setWidth] = useState(Dimensions.get('window').width);
+export const MultiBar = ({
+  pages,
+  getMultiBarRef = () => {},
+  size = 2,
+  style,
+}) => {
+  const [width, setWidth] = useState(null);
   let carousel = null;
 
   if (!Array.isArray(pages)) {
@@ -22,26 +27,29 @@ export const MultiBar = ({pages, getMultiBarRef = () => {}}) => {
 
   return (
     <View
-      style={styles.multiBar}
+      style={[styles.multiBar, Array.isArray(style) ? [...style] : style]}
       onLayout={(event) => {
-        setWidth(event.nativeEvent.layout.width);
+        const {width} = event.nativeEvent.layout;
+        setWidth(width);
       }}>
-      <Carousel
-        ref={(c) => {
-          carousel = c;
-        }}
-        layout={'default'}
-        data={items}
-        sliderWidth={width}
-        itemWidth={width}
-        renderItem={renderItems}
-      />
+      {width && (
+        <Carousel
+          ref={(c) => {
+            carousel = c;
+          }}
+          layout={'default'}
+          data={items}
+          sliderWidth={width}
+          itemWidth={width}
+          renderItem={renderItems}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   multiBar: {
-    width: '100%',
+    flex: 1,
   },
 });

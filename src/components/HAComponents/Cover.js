@@ -57,7 +57,7 @@ export const Cover = ({data, mqttClient, deviceName, topic}) => {
   };
 
   return (
-    <Card>
+    <Card style={styles.card}>
       <View style={styles.topRow}>
         <View style={styles.wrapper}>
           <Icon
@@ -65,7 +65,7 @@ export const Cover = ({data, mqttClient, deviceName, topic}) => {
             style={[styles.icon]}
             iconStyles={iconStyle}
           />
-          <View>
+          <View style={styles.text}>
             <Text
               style={[
                 globalStyles.textNormal,
@@ -122,7 +122,7 @@ export const Cover = ({data, mqttClient, deviceName, topic}) => {
               />
               <Button
                 onPress={() => multiBar.current.snapToItem(0)}
-                styles={styles.buttons}
+                styles={styles.backButton}
                 type="small">
                 <Icon
                   name="gesture-tap-button"
@@ -140,41 +140,48 @@ export const Cover = ({data, mqttClient, deviceName, topic}) => {
 };
 
 const styles = StyleSheet.create({
-  topRow: {
-    alignItems: 'flex-start',
-    alignSelf: 'stretch',
+  card: {
+    flexDirection: 'column',
     justifyContent: 'space-between',
-    marginHorizontal: 10,
+    alignItems: 'stretch',
+  },
+  topRow: {
+    flex: 2,
+    alignItems: 'flex-start',
     flexDirection: 'row',
   },
   wrapper: {
+    flex: 1,
     marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
   },
   icon: {
     marginRight: 10,
+    flex: 0,
+  },
+  text: {
+    flex: 1,
   },
   bottomRow: {
+    flex: 1,
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-    right: 10,
     justifyContent: 'space-between',
   },
   controlsList: {
+    alignItems: 'stretch',
+    alignContent: 'stretch',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginHorizontal: -10,
   },
   buttons: {
     flex: 1,
     marginHorizontal: 10,
   },
   sliderRow: {
+    alignItems: 'stretch',
+    alignContent: 'stretch',
     flexDirection: 'row',
-  },
-  slider: {
-    marginHorizontal: 5,
+    paddingRight: 5,
   },
 });

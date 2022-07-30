@@ -98,14 +98,11 @@ const styles = {
       flex: 1,
       alignItems: 'stretch',
       justifyContent: 'center',
-      height: '100%',
       flexDirection: 'row',
-      paddingHorizontal: 10,
+      paddingRight: 10,
     },
     innerContainer: {
-      width: '100%',
       height: '100%',
-      position: 'relative',
       flex: 1,
       zIndex: 2,
     },
@@ -115,13 +112,11 @@ const styles = {
     left: {
       borderTopLeftRadius: tokens.borderRadius.normal,
       borderBottomLeftRadius: tokens.borderRadius.normal,
-      height: '100%',
       flex: 0,
     },
     right: {
       borderTopRightRadius: tokens.borderRadius.normal,
       borderBottomRightRadius: tokens.borderRadius.normal,
-      height: '100%',
       flex: 0,
     },
     gradient: {
@@ -131,7 +126,7 @@ const styles = {
       top: 0,
       bottom: 0,
       zIndex: 1,
-      marginHorizontal: 10,
+      marginRight: 10,
     },
     gradientBlock: {
       borderRadius: tokens.borderRadius.normal,
@@ -145,10 +140,10 @@ const styles = {
         width: 0,
       },
       activeBackground: {
-        backgroundColor: `rgb(${tokens.colors.blue})`,
+        backgroundColor: tokens.colors.blue,
       },
       inactiveBackground: {
-        backgroundColor: `rgb(${tokens.colors.lightGrey})`,
+        backgroundColor: tokens.colors.lightGrey,
       },
       left: {
         width: 10,
@@ -158,8 +153,8 @@ const styles = {
       },
     }),
     colors: {
-      left: `rgb(${tokens.colors.blue})`,
-      right: `rgb(${tokens.colors.lightGrey})`,
+      left: tokens.colors.blue,
+      right: tokens.colors.lightGrey,
     },
   },
   light: {
@@ -170,10 +165,10 @@ const styles = {
         width: 0,
       },
       activeBackground: {
-        backgroundColor: `rgb(${tokens.colors.yellow})`,
+        backgroundColor: tokens.colors.yellow,
       },
       inactiveBackground: {
-        backgroundColor: `rgb(${tokens.colors.lightGrey})`,
+        backgroundColor: tokens.colors.lightGrey,
       },
       left: {
         width: 10,
@@ -183,17 +178,17 @@ const styles = {
       },
     }),
     colors: {
-      left: `rgb(${tokens.colors.yellow})`,
-      right: `rgb(${tokens.colors.lightGrey})`,
+      left: tokens.colors.yellow,
+      right: tokens.colors.lightGrey,
     },
   },
   colorTemp: {
     styles: StyleSheet.create({
       thumb: {
-        backgroundColor: `rgb(${tokens.colors.white})`,
+        backgroundColor: tokens.colors.white,
         borderRadius: tokens.borderRadius.small,
         borderWidth: 1,
-        borderColor: `rgb(${tokens.colors.lightGrey})`,
+        borderColor: tokens.colors.lightGrey,
         height: '100%',
         width: 15,
       },
@@ -207,17 +202,17 @@ const styles = {
     colors: {
       left: 'transparent',
       right: 'transparent',
-      gradient: ['#FFF', '#ffa200'],
-      locations: [0, 1],
+      gradient: ['#a6d1ff', '#fff', '#ffa000'],
+      locations: [0, 0.5, 1],
     },
   },
   color: {
     styles: StyleSheet.create({
       thumb: {
-        backgroundColor: `rgb(${tokens.colors.white})`,
+        backgroundColor: tokens.colors.white,
         borderRadius: tokens.borderRadius.small,
         borderWidth: 1,
-        borderColor: `rgb(${tokens.colors.lightGrey})`,
+        borderColor: tokens.colors.lightGrey,
         height: '100%',
         width: 15,
       },

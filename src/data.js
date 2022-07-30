@@ -17,14 +17,18 @@ export const connect = async (setState, deviceName, mqttInfo) => {
     const itemName = parsedTopic[parsedTopic.length - 1];
     console.log(msg.topic, deviceName);
     if (msg.topic.startsWith(`WinkHA/${deviceName}/entities/`)) {
-      const [state, deviceClass, attributes] = JSON.parse(msg.data);
+      const [state, deviceClass, attributes] =
+        JSON.parse(msg.data || null) || [];
       console.log(state, deviceClass, attributes);
       const item = {
-        [itemName]: {
-          ...state,
-          ...deviceClass,
-          attributes,
-        },
+        [itemName]:
+          state || deviceClass || attributes
+            ? {
+                ...state,
+                ...deviceClass,
+                attributes,
+              }
+            : null,
       };
       updateState(item, setState, list);
     } else if (msg.topic === `WinkHA/${deviceName}/config`) {
@@ -47,7 +51,11 @@ const updateState = (state, setState, list) => {
         (element) => Object.keys(element)[0] === itemName,
       );
       if (index >= 0) {
-        stateClone[index] = {[itemName]: state[itemName]};
+        if (!state[itemName] || Object.keys(state[itemName]).length === 0) {
+          stateClone.splice(index, 1);
+        } else {
+          stateClone[index] = {[itemName]: state[itemName]};
+        }
       } else {
         stateClone.push({[itemName]: state[itemName]});
       }

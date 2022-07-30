@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import {Icon} from '../Icon';
 import {Card} from '../Card';
-import {globalStyles} from '../../styles';
+import {globalStyles, tokens} from '../../styles';
 
 export const Switch = ({data, mqttClient, deviceName, topic}) => {
   const iconStyle = [];
@@ -34,13 +34,10 @@ export const Switch = ({data, mqttClient, deviceName, topic}) => {
     <Card>
       <TouchableHighlight
         onPress={sendCommand}
-        style={[globalStyles.borderRounded, styles.touch]}>
-        <View
-          style={[
-            globalStyles.fullSize,
-            globalStyles.centeredContent,
-            styles.wrapper,
-          ]}>
+        style={[globalStyles.borderRounded, styles.touch]}
+        activeOpacity={0.9}
+        underlayColor={tokens.colors.ha}>
+        <View style={[globalStyles.centeredContent, styles.wrapper]}>
           <Icon
             name={
               data.attributes.icon
@@ -60,8 +57,11 @@ export const Switch = ({data, mqttClient, deviceName, topic}) => {
 };
 
 const styles = StyleSheet.create({
+  touch: {
+    flex: 1,
+  },
   wrapper: {
-    padding: 12,
+    flex: 1,
   },
   title: {
     marginTop: 15,

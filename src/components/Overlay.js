@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   modal: {
     padding: 15,
-    backgroundColor: `rgb(${tokens.colors.white})`,
+    backgroundColor: tokens.colors.white,
   },
   backButton: {
     marginLeft: -15,

@@ -95,7 +95,7 @@ export const Climate = ({data, mqttClient, deviceName, topic}) => {
   };
 
   return (
-    <Card slots={2}>
+    <Card slots={2} style={styles.card}>
       <View style={styles.topRow}>
         <View style={styles.wrapper}>
           <Icon
@@ -104,7 +104,7 @@ export const Climate = ({data, mqttClient, deviceName, topic}) => {
             badgeStyles={[hvacModes[data.state].backgroundStyle]}
             style={[styles.icon]}
           />
-          <View>
+          <View style={styles.text}>
             <Text
               style={[
                 globalStyles.textNormal,
@@ -128,7 +128,10 @@ export const Climate = ({data, mqttClient, deviceName, topic}) => {
                 <TouchableHighlight
                   onPress={() =>
                     change(data.state, data.attributes.temperature - 1)
-                  }>
+                  }
+                  activeOpacity={0.9}
+                  underlayColor={tokens.colors.ha}
+                  style={globalStyles.borderRounded}>
                   <Icon
                     name="minus"
                     removeBackground
@@ -142,7 +145,10 @@ export const Climate = ({data, mqttClient, deviceName, topic}) => {
                 <TouchableHighlight
                   onPress={() =>
                     change(data.state, data.attributes.temperature + 1)
-                  }>
+                  }
+                  activeOpacity={0.9}
+                  underlayColor={tokens.colors.ha}
+                  style={globalStyles.borderRounded}>
                   <Icon
                     name="plus"
                     removeBackground
@@ -160,27 +166,32 @@ export const Climate = ({data, mqttClient, deviceName, topic}) => {
 };
 
 const styles = StyleSheet.create({
-  topRow: {
-    alignItems: 'flex-start',
-    alignSelf: 'stretch',
+  card: {
+    flexDirection: 'column',
     justifyContent: 'space-between',
-    marginHorizontal: 10,
+    alignItems: 'stretch',
+  },
+  topRow: {
+    flex: 2,
+    alignItems: 'flex-start',
     flexDirection: 'row',
   },
   wrapper: {
+    flex: 1,
     marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
   },
   icon: {
     marginRight: 10,
+    flex: 0,
+  },
+  text: {
+    flex: 1,
   },
   bottomRow: {
+    flex: 1,
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-    right: 10,
     justifyContent: 'space-between',
   },
   hvacModesList: {

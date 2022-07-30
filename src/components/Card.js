@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import {globalStyles} from '../styles';
 
 export const Card = ({children, slots = 1, style}) => {
@@ -8,7 +8,7 @@ export const Card = ({children, slots = 1, style}) => {
     globalStyles.borderRounded,
     globalStyles.whiteBackground,
     styles.card,
-    style,
+    Array.isArray(style) ? [...style] : style,
   ];
   if (slots === 1) {
     viewStyle.push(styles.oneCell);
@@ -20,19 +20,17 @@ export const Card = ({children, slots = 1, style}) => {
 
 const styles = StyleSheet.create({
   card: {
-    height: '24%',
     margin: 4,
+    height: Dimensions.get('window').height / 4 - 13,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   oneCell: {
+    flex: 1,
     minWidth: '45%',
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: 0,
   },
   twoCell: {
-    minWidth: '95%',
-    flexGrow: 2,
-    flexShrink: 0,
-    flexBasis: 0,
+    flex: 2,
+    minWidth: '90%',
   },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, TouchableHighlight} from 'react-native';
-import {globalStyles} from '../styles';
+import {globalStyles, tokens} from '../styles';
 
 export const Button = ({children, onPress, style, type = 'normal'}) => {
   let buttonStyles = [
@@ -16,7 +16,11 @@ export const Button = ({children, onPress, style, type = 'normal'}) => {
     buttonStyles.push(style);
   }
   return (
-    <TouchableHighlight onPress={onPress} style={buttonStyles}>
+    <TouchableHighlight
+      onPress={onPress}
+      style={buttonStyles}
+      activeOpacity={0.9}
+      underlayColor={tokens.colors.ha}>
       {children}
     </TouchableHighlight>
   );

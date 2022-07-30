@@ -77,19 +77,22 @@ export const Main = ({deviceName, state, mqttClient}) => {
 
 const styles = StyleSheet.create({
   scrollView: {
-    height: '100%',
+    alignContent: 'stretch',
+    alignItems: 'stretch',
   },
   body: {
+    flex: 1,
     backgroundColor: '#EEE',
-    width: '100%',
-    height: '100%',
     padding: 10,
+    alignContent: 'stretch',
+    alignItems: 'stretch',
   },
   container: {
-    display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: '100%',
-    height: '100%',
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start',
+    alignItems: 'flex-start',
   },
 });

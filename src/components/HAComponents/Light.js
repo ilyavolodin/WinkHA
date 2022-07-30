@@ -41,7 +41,7 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
     [data.attributes.supported_features, supportedFeatures],
   );
 
-  const iconStyle = [];
+  const iconStyle = [styles.icon];
   if (data.state !== 'off') {
     iconStyle.push(globalStyles.yellow, globalStyles.yellowBackground);
   } else {
@@ -114,12 +114,6 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
 
   const colorToPosition = (color) => {
     return (Color(color).hsv().hue() / 360) * 100;
-  };
-
-  const positionToRgb = (value) => {
-    return Color.hsv((360 * value) / 100, 100, 100)
-      .rgb()
-      .array();
   };
 
   const next = useCallback(() => {
@@ -226,8 +220,15 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
   return (
     <Card style={styles.card} slots={2}>
       <View style={styles.topRow}>
-        <View style={[globalStyles.fullSize, styles.wrapper]}>
-          <TouchableHighlight onPress={sendCommandToggle}>
+        <View style={styles.wrapper}>
+          <TouchableHighlight
+            onPress={sendCommandToggle}
+            activeOpacity={0.9}
+            underlayColor={tokens.colors.ha}
+            style={[
+              styles.touch,
+              globalStyles.circle(tokens.iconSizes.normal * 1.75),
+            ]}>
             <Icon
               name={
                 data.attributes.icon
@@ -256,20 +257,28 @@ export const Light = ({data, mqttClient, deviceName, topic}) => {
 };
 
 const styles = StyleSheet.create({
+  card: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+  },
+  topRow: {
+    flex: 2,
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+  },
   wrapper: {
-    padding: 12,
+    marginTop: 10,
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  bottomRow: {
-    flexDirection: 'row',
-    position: 'absolute',
-    bottom: 10,
-    left: 0,
-    right: 5,
-    justifyContent: 'space-between',
+  touch: {
+    marginRight: 10,
   },
-  title: {
-    marginTop: 15,
+  bottomRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   controls: {
     alignItems: 'stretch',
