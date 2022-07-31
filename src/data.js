@@ -30,10 +30,13 @@ export const connect = async (setState, deviceName, mqttInfo) => {
               }
             : null,
       };
-      updateState(item, setState, list);
+      updateItemsState(item, setState, list);
     } else if (msg.topic === `WinkHA/${deviceName}/config`) {
       list = JSON.parse(msg.data);
-      updateState({}, setState, list);
+      updateItemsState({}, setState, list);
+    } else if (msg.topic === `WinkHA/${deviceName}/notifications`) {
+      console.log('recieved notification');
+      updateNotificationState([JSON.parse(msg.data) || {}], setState);
     }
   });
   client.on('closed', () => console.log('connection closed'));
@@ -42,9 +45,9 @@ export const connect = async (setState, deviceName, mqttInfo) => {
   return client;
 };
 
-const updateState = (state, setState, list) => {
+const updateItemsState = (state, setState, list) => {
   setState((prevState) => {
-    const oldState = prevState || [];
+    const oldState = (prevState && prevState.components) || [];
     const stateClone = [...oldState];
     Object.keys(state).forEach((itemName) => {
       const index = oldState.findIndex(
@@ -76,6 +79,13 @@ const updateState = (state, setState, list) => {
       }
       return 0;
     });
-    return sorted;
+    return {...prevState, ...{components: sorted}};
   });
+};
+
+const updateNotificationState = (state, setState) => {
+  setState((prevState) => ({
+    ...prevState,
+    ...{notifications: [...(prevState.notifications || []), ...state]},
+  }));
 };

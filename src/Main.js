@@ -66,7 +66,7 @@ export const Main = ({deviceName, state, mqttClient}) => {
     },
     [deviceName, mqttClient],
   );
-  const items = state.map((item) => content(item));
+  const items = state.components.map((item) => content(item));
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"

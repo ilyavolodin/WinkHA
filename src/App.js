@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native';
 import RNBootSplash from 'react-native-bootsplash';
@@ -6,6 +6,7 @@ import {Regististration} from './Registration';
 import {Main} from './Main';
 import {connect} from './data';
 import {ErrorBoundary} from './components/ErrorBoundary';
+import {Notifications} from './components/Notifications';
 
 const App = () => {
   const [appState, setAppState] = useState(null);
@@ -48,9 +49,24 @@ const App = () => {
     getData();
   }, [appState]);
 
+  const clearNotifications = useCallback(() => {
+    console.log('Clearing all notifications');
+    setTimeout(
+      () =>
+        setState((prevState) => {
+          return {...prevState, ...{notifications: []}};
+        }),
+      0,
+    );
+  }, []);
+
   return (
     <SafeAreaView>
       <ErrorBoundary>
+        <Notifications
+          state={state !== null ? state.notifications : []}
+          clearNotifications={clearNotifications}
+        />
         {state !== null ? (
           <Main
             deviceName={appState.deviceName}
