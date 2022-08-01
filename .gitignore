@@ -60,3 +60,4 @@ buck-out/
 
 .vscode
 /android/app/release
+appcenter-config.json
