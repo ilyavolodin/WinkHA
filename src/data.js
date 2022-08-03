@@ -10,7 +10,12 @@ export const connect = async (setState, deviceName, mqttInfo) => {
   });
 
   let list = {};
-  client.on('error', (msg) => console.log(`Error! ${msg}`));
+  client.on('error', async (msg) => {
+    console.log(`Error! ${msg}`);
+    if (!(await client.isConnected())) {
+      client.connect();
+    }
+  });
   client.on('connect', () => console.log('connected!'));
   client.on('message', (msg) => {
     const parsedTopic = msg.topic.split('/');
